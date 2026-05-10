@@ -1,0 +1,273 @@
+{
+  "app": {
+    "name": "Cowboy Investor"
+  },
+  "common": {
+    "save": "Salvar",
+    "saving": "Salvando",
+    "cancel": "Cancelar",
+    "back": "Voltar",
+    "next": "Avançar →",
+    "loading": "Carregando…",
+    "add": "Adicionar",
+    "addCustom": "Adicionar personalizado…",
+    "none": "— nenhum —",
+    "invalidFormat": "Formato inválido.",
+    "removeAccount": "Remover conta",
+    "removeRow": "Remover linha",
+    "removeChip": "Remover {{value}}"
+  },
+  "nav": {
+    "settings": "Configurações",
+    "holdings": "Carteira",
+    "reports": "Relatórios",
+    "switchProfile": "← Trocar de perfil"
+  },
+  "language": {
+    "label": "Idioma",
+    "en": "English",
+    "pt": "Português",
+    "fr": "Français",
+    "nl": "Nederlands"
+  },
+  "profilePicker": {
+    "eyebrow": "Perfil",
+    "new": "Novo",
+    "open": "Abrir",
+    "title": "Escolha um perfil",
+    "subtitle": "Cada perfil tem suas próprias configurações, posições e histórico de relatórios.",
+    "createProfile": "+ Criar perfil",
+    "empty": {
+      "title": "Nenhum perfil ainda",
+      "body": "Monte seu primeiro perfil de investimento — faixa de risco, alocação alvo, contas, watchlist. Leva cerca de dois minutos.",
+      "start": "Iniciar o assistente →"
+    },
+    "modal": {
+      "createTitle": "Criar perfil",
+      "createHint": "Escolha um ponto de partida.",
+      "startFresh": "Começar do zero",
+      "startFreshHint": "Assistente passo a passo. Gera um profile.yaml completo com entradas validadas.",
+      "cloneFromExisting": "Clonar de existente",
+      "cloneHint": "Copie as configurações e posições de um perfil existente como ponto de partida.",
+      "cancel": "Cancelar"
+    },
+    "clone": {
+      "title": "Clonar perfil",
+      "name": "Nome",
+      "namePlaceholder": "ex. aposentadoria",
+      "nameHint": "Letras, números, hífen, sublinhado.",
+      "from": "Clonar de",
+      "button": "Clonar",
+      "errorPickSource": "Selecione um perfil de origem para clonar."
+    }
+  },
+  "wizard": {
+    "eyebrow": "Novo perfil",
+    "title": "Construa seu perfil de investimento",
+    "subtitle": "As respostas alimentam diretamente o prompt do relatório mensal. Você pode alterar tudo depois na página de Configurações.",
+    "cancel": "← Cancelar",
+    "back": "Voltar",
+    "next": "Avançar →",
+    "creating": "Criando…",
+    "create": "Criar perfil",
+    "sumOf": "soma {{sum}} / 100",
+    "steps": {
+      "1": "Identidade",
+      "2": "Risco e horizonte",
+      "3": "Fluxo de caixa",
+      "4": "Alocação",
+      "5": "Contas",
+      "6": "Watchlist",
+      "7": "Restrições e revisão"
+    },
+    "step1": {
+      "title": "Para quem é este perfil?",
+      "hint": "Define o enquadramento tributário e o contexto do prompt. Bélgica habilita o bloco fiscal belga predefinido (limite Reynders, preferência por ETFs IE/LU acumulativos, minimização de TOB). Outras residências usam um prompt genérico — o Claude consultará suas regras tributárias.",
+      "profileName": "Nome do perfil",
+      "profileNameHint": "Letras/dígitos/-/_, 1–31 caracteres.",
+      "profileNamePlaceholder": "ex. aposentadoria",
+      "taxResidency": "Residência fiscal",
+      "taxNonBelgiumNote": "O bloco específico belga será omitido. O Claude consultará suas regras tributárias locais no momento do relatório.",
+      "citizenship": "Cidadania",
+      "citizenshipHint": "Afeta apenas o contexto. Adicione ou remova chips conforme necessário.",
+      "poolSizeBand": "Faixa de patrimônio",
+      "poolSizeBandHint": "Usada para dimensionar recomendações de operações e a sensibilidade ao TOB."
+    },
+    "step2": {
+      "title": "Risco e horizonte",
+      "hint": "Define a divisão padrão crescimento/defensivo na próxima etapa.",
+      "riskProfile": "Perfil de risco",
+      "riskDesc": {
+        "conservative": "Preservação de capital; ~20/80 crescimento/defensivo.",
+        "balanced": "Mix equilibrado; ~60/40.",
+        "growth": "Tendência a renda variável de longo prazo; ~80/20.",
+        "aggressive": "Exposição máxima a renda variável; ~95/5."
+      },
+      "horizonMin": "Horizonte mín. (anos)",
+      "horizonMax": "Horizonte máx. (anos)"
+    },
+    "step3": {
+      "title": "Fluxo de caixa",
+      "hint": "A seção 4 do relatório mensal usa o ponto médio da faixa de aporte. Escolha uma faixa que você consiga manter.",
+      "contributionMin": "Aporte mensal mín. (€)",
+      "contributionMax": "Aporte mensal máx. (€)",
+      "monthlyExpenses": "Despesas mensais (€)",
+      "cashBufferMonths": "Reserva de caixa (meses)",
+      "cashBufferHint": "Reserva = despesas × meses. O relatório sinaliza qualquer déficit."
+    },
+    "step4": {
+      "title": "Alvos de alocação",
+      "hint": "Alimenta a tabela de drift na seção 2 do relatório. Cada grupo deve somar 100.",
+      "growthVsDefensive": "Crescimento vs defensivo",
+      "growthPct": "Crescimento %",
+      "defensivePct": "Defensivo %",
+      "growthBreakdown": "Detalhamento de crescimento (% da fatia de crescimento)",
+      "globalAllCap": "Global all-cap %",
+      "sp500Tilt": "Inclinação S&P 500 %",
+      "individualStocks": "Ações individuais %",
+      "defensiveBreakdown": "Detalhamento defensivo (% da fatia defensiva)",
+      "eurBondsCash": "Títulos EUR / caixa %",
+      "tesouroDireto": "Tesouro Direto %",
+      "currencyMix": "Mix de moedas",
+      "eurPct": "EUR %",
+      "brlPct": "BRL %",
+      "usdPct": "USD %",
+      "driftTolerance": "Tolerância de drift %",
+      "driftToleranceHint": "A seção 2 só sinaliza drifts acima desse valor para rebalanceamento."
+    },
+    "step5": {
+      "title": "Contas",
+      "hint": "Cada conta vira um alvo de soft-cap acompanhado pelo relatório. Vamos pré-preencher uma linha de caixa vazia por conta no holdings.csv para que a página de Carteira já abra com estrutura.",
+      "name": "Nome",
+      "use": "Uso",
+      "softCap": "Soft cap",
+      "protection": "Nota de proteção",
+      "fxNote": "Nota cambial (opcional)",
+      "custom": "+ Personalizada"
+    },
+    "step6": {
+      "title": "Watchlist e macro",
+      "hint": "Tickers buscados no momento do relatório via yfinance. Use o formato Yahoo Finance (ex.: VWCE.DE, EURBRL=X).",
+      "etfWatchlist": "Watchlist de ETFs",
+      "suggested": "Sugestões: {{list}}",
+      "fxPairs": "Pares cambiais",
+      "brazilMacro": "Macro Brasil",
+      "brazilMacroHint": "Coletado das séries SGS do BCB. Útil quando você mantém BRL ou Tesouro Direto.",
+      "selic": "SELIC (taxa-meta, % a.a.)",
+      "ipca": "IPCA (variação % em 12m)"
+    },
+    "step7": {
+      "title": "Restrições, relatório e revisão",
+      "hint": "Regras rígidas que o relatório deve seguir. Adicione ou remova chips.",
+      "donts": "Restrições (não-fazer)",
+      "belgianBlockTitle": "Bloco fiscal belga",
+      "belgianBlockBody": "Inclui as regras-padrão da tributação belga: preferir ETFs IE/LU acumulativos, evitar ETFs de renda fixa com >10% em juros, preferir índice amplo passivo, nota de minimização de TOB.",
+      "anthropicModel": "Modelo da Anthropic",
+      "previewYaml": "Pré-visualizar profile.yaml gerado",
+      "previewCsv": "Pré-visualizar holdings.csv preenchido"
+    }
+  },
+  "settings": {
+    "eyebrow": "Configurações",
+    "subtitle": "Política do perfil para {{name}}",
+    "savedAgoSeconds": "Salvo há {{n}}s",
+    "savedAgoMinutes": "Salvo há {{n}}min",
+    "savedAt": "Salvo em {{when}}",
+    "section": {
+      "riskHorizon": "Risco e horizonte",
+      "cashflow": "Fluxo de caixa",
+      "allocation": "Alvos de alocação",
+      "currencyMix": "Mix de moedas",
+      "accounts": "Contas",
+      "reporting": "Relatório"
+    },
+    "field": {
+      "riskProfile": "Perfil de risco",
+      "horizonMin": "Horizonte mín. (anos)",
+      "horizonMax": "Horizonte máx. (anos)",
+      "contribMin": "Aporte mensal mín. (€)",
+      "contribMax": "Aporte mensal máx. (€)",
+      "monthlyExpenses": "Despesas mensais (€)",
+      "cashBufferMonths": "Reserva de caixa (meses)",
+      "growthPct": "Crescimento %",
+      "defensivePct": "Defensivo %",
+      "driftTol": "Tol. drift %",
+      "eurPct": "EUR %",
+      "brlPct": "BRL %",
+      "usdPct": "USD %",
+      "name": "Nome",
+      "useCsv": "Uso (separado por vírgula)",
+      "softCapEur": "Soft cap (€)",
+      "softCapBrl": "Soft cap (R$)",
+      "protection": "Proteção",
+      "fxNote": "Nota cambial",
+      "anthropicModel": "Modelo da Anthropic"
+    },
+    "ccyMismatch": "As moedas somam {{total}}%, não 100%. (Tratadas como alvos, não como restrições estritas.)",
+    "accountsCount_one": "{{count}} conta",
+    "accountsCount_other": "{{count}} contas",
+    "accountsEmpty": "Nenhuma conta ainda. Adicione uma para alimentar sugestões no editor de Carteira.",
+    "addAccount": "+ Adicionar conta",
+    "advancedYamlShow": "▸ YAML avançado",
+    "advancedYamlHide": "▾ YAML avançado",
+    "advancedYamlHint": "Edições aqui são a fonte da verdade. Os campos do formulário acima são re-renderizados ao salvar."
+  },
+  "holdings": {
+    "eyebrow": "Carteira",
+    "positions_one": "{{count}} posição",
+    "positions_other": "{{count}} posições",
+    "saved": "Salvo",
+    "table": {
+      "account": "Conta",
+      "instrument": "Instrumento",
+      "ticker": "Ticker",
+      "isin": "ISIN",
+      "qty": "Qtd.",
+      "avgCost": "Custo médio",
+      "cur": "Moeda",
+      "class": "Classe",
+      "notes": "Notas",
+      "empty": "Nenhuma posição ainda. Adicione sua primeira linha abaixo.",
+      "addRow": "+ Adicionar linha"
+    }
+  },
+  "reports": {
+    "eyebrow": "Relatórios",
+    "titleCount_one": "{{count}} relatório para {{name}}",
+    "titleCount_other": "{{count}} relatórios para {{name}}",
+    "generate": "Gerar este mês",
+    "custom": "Relatório personalizado",
+    "customTitle": "Relatório personalizado",
+    "customSubtitle": "Adicione considerações específicas para orientar este relatório. O modelo mensal padrão continua valendo; seu texto preenche a seção Considerações do usuário.",
+    "customPlaceholder": "ex.: Foque em estratégias de hedge de BRL e avalie a alocação em Tesouro Direto considerando a última decisão da SELIC.",
+    "customRebuild": "Reconstruir contexto de mercado primeiro",
+    "customRebuildForced": "(sem contexto em cache — será construído)",
+    "customGenerate": "Gerar relatório",
+    "customCancel": "Cancelar",
+    "customCharCount": "{{count}} / 4000",
+    "emptyBody": "Nenhum relatório ainda — clique em <strong>Gerar este mês</strong> para criar o primeiro.",
+    "col": {
+      "period": "Período",
+      "generated": "Gerado em",
+      "size": "Tamanho",
+      "files": "Arquivos"
+    },
+    "open": "abrir →",
+    "backToReports": "← Voltar aos relatórios",
+    "rerenderPdf": "Renderizar PDF de novo",
+    "openPdf": "Abrir PDF",
+    "generatePdf": "Gerar PDF",
+    "report": "Relatório",
+    "stage": {
+      "context": "Construindo contexto",
+      "report": "Chamando a Anthropic",
+      "pdf": "Renderizando PDF",
+      "working": "Processando"
+    },
+    "error": {
+      "context": "build_context.py falhou",
+      "report": "generate_report.py falhou",
+      "custom": "Relatório personalizado falhou"
+    }
+  }
+}
