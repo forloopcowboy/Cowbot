@@ -35,6 +35,18 @@ PROMPT_TEMPLATE = SCRIPTS_ROOT / "prompts" / "monthly_report.md"
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--profile", default="default", help="profile name under profiles/ (default: default)")
+    p.add_argument(
+        "--user-considerations-file",
+        default=None,
+        help="path to a UTF-8 file whose contents fill the '{{user_considerations}}' "
+             "section. When omitted, the section is filled with 'None'.",
+    )
+    p.add_argument(
+        "--custom-id",
+        default=None,
+        help="when set, switches output filename to "
+             "'{profile}-{YYYY-MM-DD}-custom-{id}.md'.",
+    )
     return p.parse_args(argv)
 
 
@@ -45,7 +57,12 @@ def _format_table(rows: list[dict], cols: list[str]) -> str:
     return "\n".join(out)
 
 
-def render_prompt(template: str, ctx: dict, profile: dict) -> tuple[str, str]:
+def render_prompt(
+    template: str,
+    ctx: dict,
+    profile: dict,
+    user_considerations: str = "None",
+) -> tuple[str, str]:
     """Return (static_block, dynamic_block) — split for prompt caching."""
     today = date.today()
     report_month = today.strftime("%Y-%m")
@@ -96,7 +113,9 @@ def render_prompt(template: str, ctx: dict, profile: dict) -> tuple[str, str]:
 
     profile_yaml_str = yaml.safe_dump(profile, sort_keys=False, allow_unicode=True)
 
-    # Render the template once.
+    # Render the template once. User-provided text is replaced LAST so any
+    # placeholder-looking content inside it is treated as literal text by the
+    # model rather than triggering further substitution.
     rendered = (
         template
         .replace("{{report_month}}", report_month)
@@ -110,6 +129,7 @@ def render_prompt(template: str, ctx: dict, profile: dict) -> tuple[str, str]:
         .replace("{{brazil_macro}}", brazil_macro)
         .replace("{{contribution_low}}", str(contrib_low))
         .replace("{{contribution_high}}", str(contrib_high))
+        .replace("{{user_considerations}}", user_considerations)
     )
 
     # Split for caching: everything up to and including "## Current state" is fairly stable;
@@ -142,7 +162,19 @@ def main(argv: list[str] | None = None) -> None:
     profile = yaml.safe_load(paths["yaml"].read_text())
     ctx = load_or_build_context(args.profile, paths)
     template = PROMPT_TEMPLATE.read_text()
-    static_block, dynamic_block = render_prompt(template, ctx, profile)
+
+    user_considerations = "None"
+    if args.user_considerations_file:
+        uc_path = Path(args.user_considerations_file)
+        if not uc_path.exists():
+            err(f"User considerations file not found: {uc_path}")
+            sys.exit(1)
+        text = uc_path.read_text(encoding="utf-8").strip()
+        if text:
+            user_considerations = text
+            info(f"User considerations: {len(text):,} chars")
+
+    static_block, dynamic_block = render_prompt(template, ctx, profile, user_considerations)
 
     model = profile.get("reporting", {}).get("model", "claude-opus-4-7")
     info(f"Model: [bold]{model}[/bold]")
@@ -166,7 +198,11 @@ def main(argv: list[str] | None = None) -> None:
     report_text = "".join(b.text for b in msg.content if b.type == "text")
 
     paths["reports"].mkdir(parents=True, exist_ok=True)
-    out_path = paths["reports"] / f"{args.profile}-{date.today():%Y-%m}.md"
+    if args.custom_id:
+        out_name = f"{args.profile}-{date.today():%Y-%m-%d}-custom-{args.custom_id}.md"
+    else:
+        out_name = f"{args.profile}-{date.today():%Y-%m}.md"
+    out_path = paths["reports"] / out_name
     out_path.write_text(report_text)
 
     usage = msg.usage

@@ -59,6 +59,10 @@ Brazil macro:
 {{brazil_macro}}
 ```
 
+## User considerations
+
+{{user_considerations}}
+
 ## Tasks
 
 Produce the report below using **exactly** this section structure (so reports diff cleanly month-over-month). Keep the whole report skimmable in 2 minutes.
