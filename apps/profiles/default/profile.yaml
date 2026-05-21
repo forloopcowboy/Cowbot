@@ -1,0 +1,82 @@
+# Illustrative sample investment policy.
+# Single source of truth for the monthly-report prompt.
+# Replace these placeholders with your own constraints before generating reports.
+
+profile:
+  tax_residency: <YOUR_COUNTRY>
+  citizenship: [<YOUR_CITIZENSHIP>]
+  pool_size_band: under_25k_eur
+  risk: growth          # conservative | balanced | growth | aggressive
+  horizon_years: [3, 10]
+  monthly_contribution_eur: [500, 2000]
+  monthly_expenses_eur: 1000     # TODO: fill in your monthly expenses to compute cash buffer
+  cash_buffer_months: 3
+
+allocation_targets:
+  # High-level split of the *invested* portion (excludes cash buffer).
+  growth_pct: 80
+  defensive_pct: 20
+
+  growth_breakdown:
+    global_all_cap_pct: 50    # of growth slice
+    sp500_tilt_pct: 30        # of growth slice
+    individual_stocks_pct: 20 # of growth slice
+
+  defensive_breakdown:
+    eur_bonds_or_cash_pct: 60 # of defensive slice
+    local_sovereign_bonds_pct: 40 # of defensive slice
+
+  currency_mix:
+    eur_pct: 70
+    usd_pct: 20
+    other_pct: 10  # any secondary-currency exposure relevant to your situation
+
+  drift_tolerance_pct: 5      # don't rebalance unless drift exceeds this
+
+# Replace these example accounts with your own. Each entry should describe
+# what the account is used for and any soft caps (deposit-guarantee limits,
+# e-money safeguarding thresholds, etc.) you want respected.
+accounts:
+  - name: ExampleBank
+    use: [checking_eur, savings_eur]
+    soft_cap_eur: 100000
+    protection: deposit guarantee scheme up to €100k per bank (illustrative)
+  - name: ExampleBroker
+    use: [investment, savings_eur]
+    soft_cap_eur: 100000
+    protection: investor compensation scheme — verify entity holding your account
+
+# Optional: jurisdiction-specific tax rules the prompt should respect.
+# Customize or remove. The shipped sample illustrates the kind of rules that
+# fit here (e.g. preferring accumulating ETFs in jurisdictions that tax
+# dividends, avoiding bond ETFs above a certain interest-bearing threshold).
+tax_rules_basic:
+  prefer_accumulating_etfs: true
+  preferred_domiciles: [IE, LU]
+  prefer_passive_broad_index: true
+  notes:
+    - Customize this section for your tax jurisdiction.
+
+constraints_donts:
+  - no leveraged ETFs or products
+  - no derivatives or options
+  - no individual crypto purchases
+  - no penny stocks
+  - no short selling
+  - no concentration over 25% in any single non-ETF instrument
+
+watchlist:
+  # Tickers to fetch quotes for even if not currently held.
+  etfs:
+    - VWCE.DE   # Vanguard FTSE All-World UCITS Acc — global all-cap core
+    - IWDA.AS   # iShares Core MSCI World UCITS Acc — developed-only alternative
+    - EIMI.AS   # iShares Core MSCI EM IMI UCITS Acc — emerging markets
+    - SXR8.DE   # iShares Core S&P 500 UCITS Acc — S&P 500 tilt
+  fx:
+    - EURUSD=X
+
+reporting:
+  output_dir: ../reports
+  filename_pattern: "{year}-{month:02d}.md"
+  model: claude-opus-4-7
+  fallback_model: claude-sonnet-4-6

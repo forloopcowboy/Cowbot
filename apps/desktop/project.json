@@ -1,0 +1,44 @@
+{
+  "name": "desktop",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/desktop/src",
+  "projectType": "application",
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run dev",
+        "cwd": "apps/desktop"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run dev",
+        "cwd": "apps/desktop"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run build",
+        "cwd": "apps/desktop"
+      }
+    },
+    "preview": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run preview",
+        "cwd": "apps/desktop"
+      }
+    },
+    "dist": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run dist",
+        "cwd": "apps/desktop"
+      }
+    }
+  },
+  "tags": ["scope:desktop", "type:app"]
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.7.xsd">
+
+  <changeSet id="003-advices" author="claude">
+    <createTable tableName="advices">
+      <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="user_id" type="text"/>
+      <column name="profile_id" type="uuid">
+        <constraints foreignKeyName="fk_advices_profile"
+                     references="profiles(id)"/>
+      </column>
+      <column name="ip" type="inet">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_agent" type="text"/>
+      <column name="user_prompt" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="response_text" type="text" defaultValue="">
+        <constraints nullable="false"/>
+      </column>
+      <column name="market_snapshot_created_at" type="timestamptz"/>
+      <column name="model" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_at" type="timestamptz" defaultValueComputed="now()">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createIndex tableName="advices" indexName="ix_advices_user_created">
+      <column name="user_id"/>
+      <column name="created_at" descending="true"/>
+    </createIndex>
+    <createIndex tableName="advices" indexName="ix_advices_ip_created">
+      <column name="ip"/>
+      <column name="created_at" descending="true"/>
+    </createIndex>
+  </changeSet>
+
+</databaseChangeLog>

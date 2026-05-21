@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-electron/
+release/
+resources/python/
+resources/scripts/
+resources/seed/
+*.log
+.DS_Store
+
+# Generated artifacts (vite emits .js/.d.ts alongside .ts configs)
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts

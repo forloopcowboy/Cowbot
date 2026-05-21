@@ -1,0 +1,32 @@
+# Used by both apps/api/Dockerfile and apps/web/Dockerfile, since the docker
+# build context for each is the monorepo root.
+
+**/node_modules
+**/dist
+**/.nx
+.nx/cache
+.nx/workspace-data
+**/.cache
+**/.venv
+**/__pycache__
+**/*.tsbuildinfo
+**/coverage
+
+# Local user data (these get mounted from named volumes in prod compose)
+profiles
+reports
+tmp
+
+# Repo hygiene
+.git
+.gitignore
+.idea
+.vscode
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# Build outputs we never need inside the container
+apps/desktop/dist
+apps/desktop/.webpack

@@ -298,7 +298,7 @@ def main() -> None:
         )
 
     size_kb = out_path.stat().st_size / 1024
-    console.log(f"[green]✓[/green] Wrote [bold]{out_path.name}[/bold] ({size_kb:.1f} KB)")
+    console.print(f"[green]✓[/green] Wrote [bold]{out_path.name}[/bold] ({size_kb:.1f} KB)")
 
 
 if __name__ == "__main__":

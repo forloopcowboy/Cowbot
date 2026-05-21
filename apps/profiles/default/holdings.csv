@@ -1,0 +1,5 @@
+account,instrument,ticker,isin,quantity,avg_cost,currency,asset_class,notes
+ExampleBank,Cash EUR,,,3000,1.00,EUR,cash,Illustrative cash buffer
+ExampleBroker,Cash EUR,,,2000,1.00,EUR,cash,Illustrative uninvested cash
+ExampleBroker,Vanguard FTSE All-World UCITS Acc,VWCE.DE,IE00BK5BQT80,15,100.00,EUR,etf,Illustrative global all-cap core holding
+ExampleBroker,iShares Core S&P 500 UCITS Acc,SXR8.DE,IE00B5BMR087,2,500.00,EUR,etf,Illustrative S&P 500 tilt holding

@@ -1,0 +1,385 @@
+{
+  "app": {
+    "name": "Cowboy Investor"
+  },
+  "common": {
+    "save": "Opslaan",
+    "saving": "Opslaan",
+    "cancel": "Annuleren",
+    "back": "Terug",
+    "next": "Volgende →",
+    "loading": "Laden…",
+    "add": "Toevoegen",
+    "addCustom": "Aangepast toevoegen…",
+    "none": "— geen —",
+    "invalidFormat": "Ongeldig formaat.",
+    "removeAccount": "Rekening verwijderen",
+    "removeRow": "Rij verwijderen",
+    "removeChip": "{{value}} verwijderen"
+  },
+  "nav": {
+    "settings": "Instellingen",
+    "holdings": "Portefeuille",
+    "reports": "Rapporten",
+    "cowbot": "Vraag Cowbot",
+    "switchProfile": "← Profiel wisselen"
+  },
+  "language": {
+    "label": "Taal",
+    "en": "English",
+    "pt": "Português",
+    "fr": "Français",
+    "nl": "Nederlands"
+  },
+  "profilePicker": {
+    "eyebrow": "Profiel",
+    "new": "Nieuw",
+    "open": "Openen",
+    "title": "Kies een profiel",
+    "subtitle": "Elk profiel heeft eigen instellingen, posities en rapportgeschiedenis.",
+    "createProfile": "+ Profiel aanmaken",
+    "empty": {
+      "title": "Nog geen profielen",
+      "body": "Bouw je eerste beleggingsprofiel — risicoband, doelallocatie, rekeningen, watchlist. Duurt ongeveer twee minuten.",
+      "start": "Start de wizard →"
+    },
+    "modal": {
+      "createTitle": "Profiel aanmaken",
+      "createHint": "Kies een startpunt.",
+      "startFresh": "Vers beginnen",
+      "startFreshHint": "Stapsgewijze wizard. Genereert een volledige profile.yaml met gevalideerde invoer.",
+      "cloneFromExisting": "Klonen van bestaand",
+      "cloneHint": "Kopieer de instellingen en posities van een bestaand profiel als startpunt.",
+      "cancel": "Annuleren"
+    },
+    "clone": {
+      "title": "Profiel klonen",
+      "name": "Naam",
+      "namePlaceholder": "bv. pensioen",
+      "nameHint": "Letters, cijfers, koppelteken, underscore.",
+      "from": "Klonen van",
+      "button": "Klonen",
+      "errorPickSource": "Kies een bronprofiel om te klonen."
+    }
+  },
+  "wizard": {
+    "eyebrow": "Nieuw profiel",
+    "title": "Bouw je beleggingsprofiel",
+    "subtitle": "Antwoorden voeden direct de prompt van het maandrapport. Je kunt alles later wijzigen via Instellingen.",
+    "cancel": "← Annuleren",
+    "back": "Terug",
+    "next": "Volgende →",
+    "creating": "Aanmaken…",
+    "create": "Profiel aanmaken",
+    "sumOf": "som {{sum}} / 100",
+    "steps": {
+      "1": "Identiteit",
+      "2": "Risico & horizon",
+      "3": "Cashflow",
+      "4": "Allocatie",
+      "5": "Rekeningen",
+      "6": "Watchlist",
+      "7": "Beperkingen & overzicht"
+    },
+    "step1": {
+      "title": "Voor wie is dit profiel?",
+      "hint": "Bepaalt het fiscale kader en de promptcontext. België activeert het Belgische belastingblok (Reynders-grens, voorkeur voor accumulerende IE/LU-ETF's, TOB-minimalisatie). Andere fiscale woonplaatsen vallen terug op een generieke prompt — Claude zoekt jouw belastingregels op.",
+      "profileName": "Profielnaam",
+      "profileNameHint": "Letters/cijfers/-/_, 1–31 tekens.",
+      "profileNamePlaceholder": "bv. pensioen",
+      "taxResidency": "Fiscale woonplaats",
+      "taxNonBelgiumNote": "Het Belgische belastingblok wordt weggelaten. Claude zoekt jouw lokale belastingregels op tijdens de rapportage.",
+      "citizenship": "Nationaliteit",
+      "citizenshipHint": "Beïnvloedt alleen de context. Voeg chips toe of verwijder ze indien nodig.",
+      "poolSizeBand": "Vermogensband",
+      "poolSizeBandHint": "Wordt gebruikt om handelsadvies en TOB-gevoeligheid te dimensioneren."
+    },
+    "step2": {
+      "title": "Risico & horizon",
+      "hint": "Bepaalt de standaardverdeling groei/defensief in de volgende stap.",
+      "riskProfile": "Risicoprofiel",
+      "riskDesc": {
+        "conservative": "Kapitaalbehoud; ~20/80 groei/defensief.",
+        "balanced": "Evenwichtige mix; ~60/40.",
+        "growth": "Lange-termijn aandelenfocus; ~80/20.",
+        "aggressive": "Maximale aandelenexposure; ~95/5."
+      },
+      "horizonMin": "Horizon min (jaren)",
+      "horizonMax": "Horizon max (jaren)"
+    },
+    "step3": {
+      "title": "Cashflow",
+      "hint": "Sectie 4 van het maandrapport gebruikt het middelpunt van de inlegrange. Kies een band die je kunt volhouden.",
+      "contributionMin": "Maandelijkse inleg min (€)",
+      "contributionMax": "Maandelijkse inleg max (€)",
+      "monthlyExpenses": "Maandelijkse uitgaven (€)",
+      "cashBufferMonths": "Cashbuffer (maanden)",
+      "cashBufferHint": "Buffer = uitgaven × maanden. Het rapport signaleert elk tekort."
+    },
+    "step4": {
+      "title": "Allocatiedoelen",
+      "hint": "Voedt de drift-tabel in sectie 2 van het rapport. Elke groep moet 100 zijn.",
+      "growthVsDefensive": "Groei vs defensief",
+      "growthPct": "Groei %",
+      "defensivePct": "Defensief %",
+      "growthBreakdown": "Groei-uitsplitsing (% van groei-deel)",
+      "globalAllCap": "Wereldwijd all-cap %",
+      "sp500Tilt": "S&P 500-tilt %",
+      "individualStocks": "Individuele aandelen %",
+      "defensiveBreakdown": "Defensieve uitsplitsing (% van defensief deel)",
+      "eurBondsCash": "EUR-obligaties / cash %",
+      "tesouroDireto": "Tesouro Direto %",
+      "currencyMix": "Valutamix",
+      "eurPct": "EUR %",
+      "brlPct": "BRL %",
+      "usdPct": "USD %",
+      "driftTolerance": "Drift-tolerantie %",
+      "driftToleranceHint": "Sectie 2 signaleert alleen drifts boven deze drempel voor herbalancering."
+    },
+    "step5": {
+      "title": "Rekeningen",
+      "hint": "Elke rekening wordt een soft-cap-doel dat het rapport bijhoudt. Per rekening wordt een lege cash-rij in holdings.csv vooringevuld zodat de Portefeuille-pagina al gestructureerd opent.",
+      "name": "Naam",
+      "use": "Gebruik",
+      "softCap": "Soft cap",
+      "protection": "Beschermingsnotitie",
+      "fxNote": "FX-notitie (optioneel)",
+      "custom": "+ Aangepast"
+    },
+    "step6": {
+      "title": "Watchlist & macro",
+      "hint": "Tickers worden bij rapportage opgehaald via yfinance. Gebruik het Yahoo Finance-formaat (bv. VWCE.DE, EURBRL=X).",
+      "etfWatchlist": "ETF-watchlist",
+      "suggested": "Suggesties: {{list}}",
+      "fxPairs": "FX-paren",
+      "brazilMacro": "Brazilië macro",
+      "brazilMacroHint": "Uit de BCB SGS-reeksen. Nuttig als je BRL of Tesouro Direto aanhoudt.",
+      "selic": "SELIC (beleidsrente, % per jaar)",
+      "ipca": "IPCA (12m % verandering)"
+    },
+    "step7": {
+      "title": "Beperkingen, rapportage & overzicht",
+      "hint": "Strikte regels waar het rapport zich aan moet houden. Voeg chips toe of verwijder ze.",
+      "donts": "Beperkingen (don'ts)",
+      "belgianBlockTitle": "Belgisch belastingblok",
+      "belgianBlockBody": "Inclusief de standaard Belgische belastingregels: voorkeur voor accumulerende IE/LU-ETF's, vermijd obligatie-ETF's >10% rentedragend, voorkeur voor passieve brede index, TOB-minimalisatienotitie.",
+      "anthropicModel": "Anthropic-model",
+      "previewYaml": "Voorbeeld gegenereerde profile.yaml",
+      "previewCsv": "Voorbeeld vooringevulde holdings.csv"
+    }
+  },
+  "settings": {
+    "eyebrow": "Instellingen",
+    "subtitle": "Profielbeleid voor {{name}}",
+    "savedAgoSeconds": "{{n}}s geleden opgeslagen",
+    "savedAgoMinutes": "{{n}}m geleden opgeslagen",
+    "savedAt": "Opgeslagen om {{when}}",
+    "section": {
+      "riskHorizon": "Risico & horizon",
+      "cashflow": "Cashflow",
+      "allocation": "Allocatiedoelen",
+      "currencyMix": "Valutamix",
+      "accounts": "Rekeningen",
+      "watchlist": "Watchlist",
+      "reporting": "Rapportage"
+    },
+    "watchlist": {
+      "etfs": "ETF's & aandelen",
+      "fx": "Valutaparen"
+    },
+    "field": {
+      "riskProfile": "Risicoprofiel",
+      "horizonMin": "Horizon min (jaren)",
+      "horizonMax": "Horizon max (jaren)",
+      "contribMin": "Maandelijkse inleg min (€)",
+      "contribMax": "Maandelijkse inleg max (€)",
+      "monthlyExpenses": "Maandelijkse uitgaven (€)",
+      "cashBufferMonths": "Cashbuffer (maanden)",
+      "growthPct": "Groei %",
+      "defensivePct": "Defensief %",
+      "driftTol": "Drift-tol. %",
+      "eurPct": "EUR %",
+      "brlPct": "BRL %",
+      "usdPct": "USD %",
+      "name": "Naam",
+      "useCsv": "Gebruik (kommagescheiden)",
+      "softCapEur": "Soft cap (€)",
+      "softCapBrl": "Soft cap (R$)",
+      "protection": "Bescherming",
+      "fxNote": "FX-notitie",
+      "anthropicModel": "Anthropic-model",
+      "anthropicApiKey": "Anthropic API-sleutel"
+    },
+    "apiKey": {
+      "placeholderEmpty": "sk-ant-…",
+      "placeholderSet": "•••••••• (opgeslagen)",
+      "save": "Sleutel opslaan",
+      "replace": "Vervangen",
+      "clear": "Wissen",
+      "statusSet": "Een sleutel is opgeslagen op dit apparaat (versleuteld via de OS-sleutelbos).",
+      "statusMissing": "Geen sleutel opgeslagen. Rapporten kunnen pas draaien na het opslaan."
+    },
+    "ccyMismatch": "Valuta sommeren tot {{total}}%, niet 100%. (Behandeld als doelen, geen strikte beperkingen.)",
+    "accountsCount_one": "{{count}} rekening",
+    "accountsCount_other": "{{count}} rekeningen",
+    "accountsEmpty": "Nog geen rekeningen. Voeg er een toe om suggesties in de Portefeuille-editor te voeden.",
+    "addAccount": "+ Rekening toevoegen",
+    "advancedYamlShow": "▸ Geavanceerde YAML",
+    "advancedYamlHide": "▾ Geavanceerde YAML",
+    "advancedYamlHint": "Wijzigingen hier zijn leidend. De formuliervelden hierboven worden bij opslaan bijgewerkt."
+  },
+  "tickerSearcher": {
+    "searchPlaceholder": {
+      "etf": "Zoek ETF's, aandelen (bv. Vanguard, AAPL)…",
+      "fx": "Zoek valutaparen (bv. EURBRL=X, USD)…"
+    },
+    "noResults": "Geen treffers.",
+    "searchError": "Kon Yahoo niet bereiken: {{error}}",
+    "quoteError": "Koers niet beschikbaar",
+    "suggested": "Suggesties",
+    "added": "Toegevoegd",
+    "add": "Toevoegen",
+    "remove": "Verwijderen"
+  },
+  "holdings": {
+    "eyebrow": "Portefeuille",
+    "positions_one": "{{count}} positie",
+    "positions_other": "{{count}} posities",
+    "saved": "Opgeslagen",
+    "upload": "CSV uploaden",
+    "appended_one": "{{count}} rij toegevoegd — klik op Opslaan om te behouden",
+    "appended_other": "{{count}} rijen toegevoegd — klik op Opslaan om te behouden",
+    "table": {
+      "account": "Rekening",
+      "instrument": "Instrument",
+      "ticker": "Ticker",
+      "isin": "ISIN",
+      "qty": "Aantal",
+      "avgCost": "Gem. kost",
+      "cur": "Val.",
+      "class": "Klasse",
+      "notes": "Notities",
+      "empty": "Nog geen posities. Voeg hieronder je eerste rij toe.",
+      "addRow": "+ Rij toevoegen"
+    }
+  },
+  "reports": {
+    "eyebrow": "Rapporten",
+    "titleCount_one": "{{count}} rapport voor {{name}}",
+    "titleCount_other": "{{count}} rapporten voor {{name}}",
+    "generate": "Genereer deze maand",
+    "custom": "Aangepast rapport",
+    "customTitle": "Aangepast rapport",
+    "customSubtitle": "Voeg specifieke overwegingen toe om dit rapport op te focussen. Het standaard maandelijkse sjabloon blijft van toepassing; jouw tekst vult de sectie Gebruikersoverwegingen.",
+    "customPlaceholder": "bv. Focus op BRL-hedgingstrategieën en evalueer de Tesouro Direto-allocatie gezien de laatste SELIC-beweging.",
+    "customRebuild": "Eerst marktcontext opnieuw opbouwen",
+    "customRebuildForced": "(geen cached context — wordt opgebouwd)",
+    "customGenerate": "Rapport genereren",
+    "customCancel": "Annuleren",
+    "customCharCount": "{{count}} / 4000",
+    "emptyBody": "Nog geen rapporten — klik op <strong>Genereer deze maand</strong> om de eerste te maken.",
+    "col": {
+      "period": "Periode",
+      "generated": "Gegenereerd",
+      "size": "Grootte",
+      "files": "Bestanden"
+    },
+    "open": "openen →",
+    "backToReports": "← Terug naar rapporten",
+    "rerenderPdf": "PDF opnieuw renderen",
+    "openPdf": "PDF openen",
+    "generatePdf": "PDF genereren",
+    "report": "Rapport",
+    "stage": {
+      "context": "Context opbouwen",
+      "report": "Anthropic aanroepen",
+      "pdf": "PDF renderen",
+      "working": "Bezig"
+    },
+    "error": {
+      "context": "build_context.py is mislukt",
+      "report": "generate_report.py is mislukt",
+      "custom": "Aangepast rapport is mislukt",
+      "pdfRender": "Rapport gegenereerd, maar PDF-rendering is mislukt"
+    }
+  },
+  "home": {
+    "nav": {
+      "signIn": "Inloggen",
+      "cta": "Beginnen"
+    },
+    "quips": {
+      "generic": [
+        "Wil je <gold>snel en vies</gold> beleggings­advies?",
+        "Behoefte aan een <gold>scherpe mening</gold> over waar je je cash parkeert?",
+        "Wil je een <gold>no-nonsense</gold> second opinion?",
+        "Op zoek naar een <gold>snelle check</gold> op de markt?",
+        "Behoefte aan een <gold>recht-voor-zijn-raap</gold> oordeel over de markt?",
+        "Behoefte aan een <gold>bull-of-bear</gold> oordeel in tien seconden?",
+        "Wil je een mening in <gold>begrijpelijke taal</gold> over de markt?"
+      ],
+      "profile": [
+        "Wil je advies dat <gold>je portefeuille echt kent</gold>?",
+        "Benieuwd wat Cowbot vindt van <gold>je huidige posities</gold>?",
+        "Klaar voor een advies <gold>afgestemd op jouw plan</gold>?",
+        "Wil je een <gold>second opinion</gold> over je posities?",
+        "Wil je advies dat <gold>eerst je portefeuille leest</gold>?",
+        "Op zoek naar een <gold>herbalancerings­advies</gold> voor je portefeuille?"
+      ]
+    },
+    "hero": {
+      "eyebrow": "Cowbot · direct antwoord",
+      "pitch1": "Wil je <gold>snel en vies</gold> beleggings­advies?",
+      "pitch2": "Twijfel je in welke penny stock je geld moet steken?",
+      "pitch3": "Vraag het aan <gold>Cowbot</gold>.",
+      "subline": "Sla de grafieken over. Vraag het een AI die live marktdata leest—antwoorden in seconden.",
+      "inputLabel": "Vraag aan Cowbot",
+      "placeholder": "Ik heb 10.000 euro, welke ETF moet ik deze maand kopen?",
+      "hint": "Druk op enter om te vragen",
+      "submit": "Vraag",
+      "submitLoading": "Bezig",
+      "replyLabel": "Cowbot zegt",
+      "replyThinking": "Denken",
+      "replyThinkingBody": "Cijfers verwerken…",
+      "errorGeneric": "Cowbot kon dat niet beantwoorden. Probeer het opnieuw.",
+      "scrollCue": "Wil je een echt antwoord?"
+    },
+    "profile": {
+      "eyebrow": "Voor de lange termijn",
+      "title1": "Beter dan vies advies.",
+      "title2": "Beslist niet zo snel.",
+      "body": "Vertel Cowbot wat je echt bezit, waar je voor spaart en hoeveel verlies je kunt verdragen. Met een volledig beleggers­profiel stopt het met gokken en begint het te redeneren — scenario voor scenario, valuta voor valuta, jaar voor jaar.",
+      "cardEyebrow": "Wat je krijgt met een profiel",
+      "bullet1": "Importeer je portefeuille via CSV",
+      "bullet2": "Stel risico­tolerantie, horizon en valuta in",
+      "bullet3": "Run scenario’s — drawdowns, FX-schokken, pensioen",
+      "bullet4": "Vergelijk met benchmark-allocaties",
+      "cta": "Maak je beleggersprofiel",
+      "ctaSub": "≈ 30s",
+      "or": "of",
+      "signIn": "inloggen"
+    },
+    "footer": {
+      "tagline": "Cowboy Investor is software, geen geregistreerde beleggings­adviseur. De uitvoer is educatief. Beslissingen, en hun gevolgen, zijn van jou.",
+      "copyright": "© 2026 Cowboy Investor",
+      "builtBy": "Onafhankelijk gebouwd",
+      "disclaimer": "Beleggen brengt risico’s met zich mee, waaronder het mogelijke verlies van de hoofdsom. De informatie hier wordt door software gegenereerd en kan onjuistheden bevatten. Niets op deze site is een aanbod tot koop of verkoop van enig effect."
+    }
+  },
+  "advice": {
+    "list": {
+      "title": "Recente vragen",
+      "empty": "Stel Cowbot een vraag om je geschiedenis te starten.",
+      "viewLink": "Bekijk →",
+      "previous": "Vorige",
+      "next": "Volgende",
+      "pageOf": "Pagina {{page}} van {{total}}"
+    },
+    "detail": {
+      "back": "← Terug",
+      "question": "Jouw vraag",
+      "answer": "Cowbot zegt",
+      "notFound": "Advies niet gevonden of niet langer toegankelijk."
+    }
+  }
+}

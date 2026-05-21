@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: investment-plan-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: investment
+      POSTGRES_PASSWORD: investment
+      POSTGRES_DB: investment_plan
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U investment -d investment_plan"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:11.4
+    container_name: investment-plan-supertokens
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3567:3567"
+    environment:
+      POSTGRESQL_CONNECTION_URI: "postgresql://investment:investment@postgres:5432/investment_plan"
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -c
+        - 'exec 3<>/dev/tcp/127.0.0.1/3567 && echo -e "GET /hello HTTP/1.1\r\nhost: 127.0.0.1:3567\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep "Hello"'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # One-shot Liquibase runner. Activated only with --profile migrate, so it
+  # doesn't try to start on `docker compose up`. Invoked by `npm run db:migrate`.
+  liquibase:
+    image: liquibase/liquibase:4.30
+    profiles: ["migrate"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./apps/api/liquibase/changelog:/liquibase/changelog
+    working_dir: /liquibase/changelog
+    command:
+      - --url=jdbc:postgresql://postgres:5432/investment_plan
+      - --username=investment
+      - --password=investment
+      - --changeLogFile=master.xml
+      - update
+
+volumes:
+  pgdata:

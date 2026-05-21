@@ -1,0 +1,6 @@
+# This directory holds release artifacts uploaded by scripts/publish-mac.sh.
+# On the VM, Caddy serves the contents under /downloads/* on the WEB_HOST domain.
+# scripts/deploy-ssh.sh explicitly excludes this directory from rsync so deploys
+# never wipe a published artifact.
+#
+# Nothing here is committed to git; we just want the directory to exist.

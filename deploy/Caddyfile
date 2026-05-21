@@ -1,0 +1,45 @@
+{
+    email {$ACME_EMAIL}
+    # Automatic HTTPS via Let's Encrypt. Caddy persists certs in /data.
+}
+
+# --- frontend (SPA) ---
+{$WEB_HOST} {
+    encode zstd gzip
+
+    # Static downloads (e.g. macOS DMG published by scripts/publish-mac.sh).
+    # Files live on the host at deploy/downloads/ and are mounted read-only
+    # into this container at /srv/downloads.
+    handle_path /downloads/* {
+        root * /srv/downloads
+        file_server {
+            hide .* *.tmp
+        }
+    }
+
+    handle {
+        reverse_proxy web:80
+    }
+}
+
+# --- REST API ---
+{$API_HOST} {
+    encode zstd gzip
+    # SSE log streams need long upstream timeouts.
+    reverse_proxy api:3000 {
+        flush_interval -1
+        transport http {
+            read_timeout 24h
+            write_timeout 24h
+        }
+    }
+}
+
+# --- SuperTokens auth surface ---
+# Same backend container as the API; routed under a separate subdomain so the
+# session cookie can be issued against the apex (.invest.example.com) and shared
+# with both the web origin and the API origin.
+{$AUTH_HOST} {
+    encode zstd gzip
+    reverse_proxy api:3000
+}

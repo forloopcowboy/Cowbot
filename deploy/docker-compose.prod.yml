@@ -1,0 +1,151 @@
+# Production stack for the Investment Plan web app.
+#
+# Coexists peacefully with the existing Minecraft compose stack on the same VM:
+# we only bind ports 80 and 443 (Caddy) and use our own named volumes/network.
+# Minecraft keeps its own ports (25565) and is reached via DNS (minecraft.<root>)
+# pointing at the same VM IP — no proxying is needed for it.
+#
+# All persistent data lives in named docker volumes (pgdata, caddy_data,
+# caddy_config). `docker compose down` does NOT delete those, so re-running
+# `npm run deploy:ssh <ip>` is safe.
+
+name: invplan
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: invplan-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-investment}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}
+      POSTGRES_DB: ${POSTGRES_DB:-investment_plan}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # Bind to VM loopback only — NOT 0.0.0.0. This makes Postgres reachable from
+    # the VM itself (so an SSH local-forward works) without exposing 5432 to the
+    # internet. Connect from your laptop with:
+    #   ssh -N -L 5432:127.0.0.1:5432 root@<vm-ip>
+    # Then point your client at localhost:5432.
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U ${POSTGRES_USER:-investment} -d ${POSTGRES_DB:-investment_plan}
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [internal]
+
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:9.3
+    container_name: invplan-supertokens
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRESQL_CONNECTION_URI: "postgresql://${POSTGRES_USER:-investment}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-investment_plan}"
+      API_KEYS: ${SUPERTOKENS_API_KEY}
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -c
+        - 'exec 3<>/dev/tcp/127.0.0.1/3567 && echo -e "GET /hello HTTP/1.1\r\nhost: 127.0.0.1:3567\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep "Hello"'
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [internal]
+
+  # One-shot Liquibase runner — only with --profile migrate.
+  liquibase:
+    image: liquibase/liquibase:4.30
+    profiles: ["migrate"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../apps/api/liquibase/changelog:/liquibase/changelog
+    working_dir: /liquibase/changelog
+    command:
+      - --url=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-investment_plan}
+      - --username=${POSTGRES_USER:-investment}
+      - --password=${POSTGRES_PASSWORD}
+      - --changeLogFile=master.xml
+      - update
+    networks: [internal]
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    image: invplan/api:latest
+    container_name: invplan-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      supertokens:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DATABASE_URL: "postgres://${POSTGRES_USER:-investment}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-investment_plan}"
+      SUPERTOKENS_CONNECTION_URI: http://supertokens:3567
+      SUPERTOKENS_API_KEY: ${SUPERTOKENS_API_KEY}
+      # SuperTokens server-side config — see apps/api/src/auth/supertokens.config.ts.
+      API_DOMAIN: https://${AUTH_HOST}
+      WEB_ORIGIN: "https://${WEB_HOST},https://${API_HOST},https://${AUTH_HOST}"
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN}
+      API_KEY_ENCRYPTION_KEY: ${API_KEY_ENCRYPTION_KEY}
+      ANTHROPIC_API_KEY_ANONYMOUS: ${ANTHROPIC_API_KEY_ANONYMOUS:?set ANTHROPIC_API_KEY_ANONYMOUS in deploy/.env}
+    networks: [internal, proxy]
+
+  web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_ORIGIN: https://${API_HOST}
+        VITE_AUTH_ORIGIN: https://${AUTH_HOST}
+        # Public URL of the macOS DMG. Populated by scripts/publish-mac.sh
+        # into deploy/.env on the remote; baked into the Vite bundle so the
+        # marketing site's download buttons point at the live artifact.
+        VITE_DOWNLOAD_URL_MAC: ${DOWNLOAD_URL_MAC:-/downloads/cowboy-investor-mac.dmg}
+    image: invplan/web:latest
+    container_name: invplan-web
+    restart: unless-stopped
+    networks: [proxy]
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: invplan-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./downloads:/srv/downloads:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      WEB_HOST: ${WEB_HOST}
+      API_HOST: ${API_HOST}
+      AUTH_HOST: ${AUTH_HOST}
+      ACME_EMAIL: ${ACME_EMAIL}
+    depends_on:
+      - api
+      - web
+    networks: [proxy]
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
+
+networks:
+  internal:
+  proxy:

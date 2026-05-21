@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "node",
+    "outDir": "../../dist/libs/shared",
+    "declaration": true,
+    "strict": true
+  },
+  "include": ["src/**/*.ts"]
+}

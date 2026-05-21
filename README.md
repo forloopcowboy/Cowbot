@@ -1,136 +1,159 @@
 # Investment plan — personal advisor loop
 
-A monthly markdown report that tells me what to move where, given my accounts, constraints, and goals. Built around a templated Claude prompt fed by Python helpers that pull market data and read my current holdings.
+A monthly markdown report that tells you what to move where, given your accounts, constraints, and goals. Built around a templated Claude prompt fed by Python helpers that pull market data and read your current holdings.
 
-This is **not a trading system**. Recommendations are executed manually in Revolut / Wise / Nubank.
+This is **not a trading system**. Recommendations are executed manually in whichever brokerages or banks you actually use.
 
-## Profile (defaults)
+> The bundled sample profile (`apps/profiles/default/`) is a fictional illustrative profile so the app has something to render on first run. Replace it with your own via the in-app wizard or by editing `profile.yaml` + `holdings.csv` directly.
+
+## Example profile shape
+
+The sample profile shipped in `apps/profiles/default/profile.yaml` looks roughly like:
 
 | | |
 |---|---|
-| Tax residency | Belgium (PT citizen, BR national) |
-| Pool size | < €25k |
-| Risk | Growth (80% growth / 20% defensive) |
-| Horizon | 3–10 years |
-| Monthly contribution | €500–€2,000 |
-| Cash buffer | 3 months expenses (kept liquid, not invested) |
-| Currency mix (invested) | ~80% EUR / ~20% BRL |
-| Equity tilt | Global all-cap core + S&P 500 tilt |
-| Asset classes | broad-market ETFs, individual stocks, bonds / fixed income / Tesouro Direto |
+| Tax residency | (your country) |
+| Pool size | a chosen size band |
+| Risk | conservative / balanced / growth / aggressive |
+| Horizon | a number of years |
+| Monthly contribution | a range |
+| Cash buffer | N months of expenses kept liquid |
+| Currency mix (invested) | configurable percentages |
+| Equity tilt | e.g. global all-cap core + index tilt |
+| Asset classes | broad-market ETFs, individual stocks, bonds / fixed income, local sovereign bonds |
 
-Full policy lives in [`profiles/default/profile.yaml`](./profiles/default/profile.yaml).
+Full schema lives in [`apps/profiles/default/profile.yaml`](./apps/profiles/default/profile.yaml).
 
-## Accounts
-
-| Account | Use | User-stated cap | Real protection (verify) |
-|---|---|---|---|
-| Wise | EUR/multi-currency savings | "insured to 20k" | Wise is e-money — funds are *safeguarded* (segregated), **not** FSCS/DGS-insured. Treat 20k as a soft cap. |
-| Revolut | EUR investment + savings | "insured to 100k" | Depends on entity: Revolut Bank UAB (LT) → Lithuanian DGS €100k. Revolut Ltd e-money → safeguarded only. |
-| Nubank (BR) | BRL savings + investment | n/a | Brazilian FGC up to R$250k per institution. EUR→BRL via Wise has tiered fees. |
+The profile schema also lets you list any accounts you use, each tagged with what they're for and any soft caps you want to respect (deposit-guarantee limits, e-money safeguarding thresholds, etc.). The sample profile illustrates the shape — substitute your own institutions.
 
 ## Layout
 
+This is an Nx monorepo. The three runnable surfaces share `libs/` for code and `prompts/` + `scripts/` for the Python prompt pipeline.
+
 ```
 investment-plan/
-├── README.md
-├── profiles/
-│   └── default/                  # one folder per profile
-│       ├── profile.yaml          # investment policy
-│       ├── holdings.csv          # current positions
-│       ├── .context.{json,md}    # cached context (built by scripts)
-│       └── reports/
-│           ├── default-YYYY-MM.md
-│           └── default-YYYY-MM.pdf
+├── apps/
+│   ├── api/                  # NestJS REST API + SuperTokens + Postgres (Kysely + Liquibase)
+│   ├── web/                  # Vite + React SPA — the web frontend served behind nginx
+│   ├── desktop/              # Electron + React app; bundles its own Python runtime
+│   └── profiles/             # sample profile shipped with the repo (gitignored after first edit)
+│       └── default/
+│           ├── profile.yaml  # investment policy
+│           ├── holdings.csv  # current positions
+│           └── reports/      # generated markdown + PDF reports
+├── libs/
+│   ├── shared/               # TypeScript types shared by api/web/desktop
+│   ├── ui/                   # React components & pages reused by web and desktop
+│   └── i18n/                 # locale bundles (en, fr, nl, pt)
 ├── prompts/
-│   └── monthly_report.md         # Claude prompt template
-├── scripts/                      # uv-managed Python (CLI flow)
+│   └── monthly_report.md     # Claude prompt template
+├── scripts/                  # uv-managed Python (CLI flow + report generation)
 │   ├── pyproject.toml
-│   ├── fetch_quotes.py
-│   ├── fetch_brazil.py
-│   ├── fetch_fx.py
 │   ├── build_context.py
+│   ├── fetch_quotes.py / fetch_brazil.py / fetch_fx.py
 │   ├── generate_report.py
-│   └── to_pdf.py                 # CLI-only PDF (WeasyPrint via Homebrew)
-└── desktop/                      # Electron + React + Tailwind app
-    ├── electron/                 # main + preload + report CSS
-    ├── src/                      # React UI
-    └── scripts/prepare-python.sh # bundles Python into the .dmg
+│   └── to_pdf.py             # CLI-only PDF (WeasyPrint via Homebrew)
+├── deploy/                   # production docker-compose + Caddyfile (see DEPLOYMENT.md)
+└── docker-compose.yml        # local Postgres + SuperTokens for the web/api stack
 ```
 
 ## How to run
 
-Two paths: a **CLI** (terminal-driven, uses your local Python via `uv`) and a **Desktop app** (self-contained Electron app, no external Python needed once installed).
+Three flavors, in increasing order of plumbing:
 
-### CLI
+1. **CLI only** — Python scripts read a YAML + CSV, call Claude, emit a markdown report. No database, no UI, no web stack.
+2. **Desktop app** — Electron shell around the same React UI. Bundles its own Python runtime so end users don't need `uv` or Homebrew.
+3. **Web stack** — `api` + `web` containers behind Caddy, backed by Postgres + SuperTokens, deployable to a VM (see [DEPLOYMENT.md](./DEPLOYMENT.md)). Run locally via `docker compose`.
+
+### 1. CLI — just the prompt + Python scripts
+
+The minimum viable loop: edit `profile.yaml` + `holdings.csv`, run two scripts, read the markdown.
 
 ```bash
-# 1. One-time: drop your API key into .env (repo root or scripts/)
+# One-time: drop your API key into .env at the repo root
 cp .env.example .env
-$EDITOR .env  # set ANTHROPIC_API_KEY=sk-ant-...
+$EDITOR .env   # set ANTHROPIC_API_KEY=sk-ant-...
 
-# 2. Install deps
+# Install Python deps (uses uv; see https://astral.sh/uv)
 cd scripts
 uv sync
 
-# 3. Build the context block (writes profiles/<name>/.context.{json,md})
+# Edit your profile + holdings
+$EDITOR ../apps/profiles/default/profile.yaml
+$EDITOR ../apps/profiles/default/holdings.csv
+
+# Build the cached context block (quotes, FX, etc.)
 uv run python build_context.py --profile default
 
-# 4. Generate this month's report
+# Generate this month's report
 uv run python generate_report.py --profile default
-# → profiles/default/reports/default-YYYY-MM.md
+# → apps/profiles/default/reports/default-YYYY-MM.md
 
-# 5. Optional: render the latest report to a styled PDF (WeasyPrint)
+# Optional: render the latest report to a styled PDF (WeasyPrint)
 brew install pango cairo gdk-pixbuf libffi
 uv run python to_pdf.py --profile default
-# → profiles/default/reports/default-YYYY-MM.pdf
+# → apps/profiles/default/reports/default-YYYY-MM.pdf
 ```
 
-`generate_report.py` auto-loads `.env` from repo root and from `scripts/` (the latter wins). You can still `export ANTHROPIC_API_KEY=...` in your shell instead.
-
-### Desktop app
-
-```bash
-cd desktop
-npm install
-npm run dev          # launches Electron with hot-reload, uses your local uv
-```
-
-Build a self-contained `.dmg`/`.exe`/`AppImage`:
-
-```bash
-cd desktop
-npm run dist         # runs prepare-python.sh + electron-builder
-```
-
-`prepare-python.sh` downloads [`python-build-standalone`](https://github.com/astral-sh/python-build-standalone), pip-installs the runtime deps (anthropic, yfinance, pandas, requests, pyyaml, rich, markdown, python-dotenv), and copies the scripts + prompts + a starter profile snapshot into `desktop/resources/`. `electron-builder` then bundles all of it into the app. **WeasyPrint and its native libs are not bundled** — the desktop app generates PDFs natively via Chromium's `printToPDF`. End users do not need uv, Python, or Homebrew.
-
-Output: `desktop/release/Investment Plan-0.1.0-arm64.dmg` (and per-platform variants).
+`generate_report.py` auto-loads `.env` from the repo root and from `scripts/` (the latter wins). You can also `export ANTHROPIC_API_KEY=...` in your shell instead.
 
 Read the generated report, decide what to act on, execute trades manually.
 
-## Iteration roadmap
+### 2. Desktop app — Electron + React, self-contained
 
-**Iteration 1:** CLI loop — manual holdings, public market data, on-demand local report. ✓
+Drives the same Python scripts under the hood but wraps them in a UI for editing profiles, holdings, settings, and viewing rendered reports.
 
-**Iteration 2:** Multi-profile + desktop app — Electron shell, structured settings/holdings editor, in-app PDF rendering, packaged `.dmg`. ✓
+```bash
+# Install workspace dependencies (from the repo root)
+npm install
 
-**Iteration 3 (next):**
-- Account-API integrations: Revolut (read-only positions), Wise (balances). Nubank likely manual/CSV (no public API).
-- `launchd` plist for monthly auto-run on macOS.
-- Tauri port (smaller bundle, native menus) — keeps the same React renderer.
+# Run the Electron app in dev mode (uses your local uv for Python)
+npx nx run desktop:dev
+# or: cd apps/desktop && npm run dev
+```
 
-**Iteration 4:**
-- Email delivery via Gmail MCP.
-- Full Belgian tax optimization pass: TOB transaction-tax classes per fund, Reynders thresholds, exit-tax accumulating-fund rules.
-- Backtest advisor recommendations against a passive-baseline portfolio.
+Build a self-contained `.dmg` / `.exe` / `AppImage`:
 
-## Belgian tax — basic rules baked in (iter 1)
+```bash
+cd apps/desktop
+npm run dist            # macOS/Linux/Windows for the current host
+npm run dist:mac        # macOS only
+```
 
-These are encoded in `profile.yaml` so Claude respects them when recommending:
+`scripts/prepare-python.sh` (invoked by `dist`) downloads [`python-build-standalone`](https://github.com/astral-sh/python-build-standalone), pip-installs the runtime deps, and copies `scripts/` + `prompts/` into `apps/desktop/resources/`. `electron-builder` then bundles all of it into the app. **WeasyPrint and its native libs are not bundled** — the desktop app renders PDFs natively via Chromium's `printToPDF`. End users do not need `uv`, Python, or Homebrew.
 
-- Prefer **accumulating** ETFs (no DBI/dividend tax leakage); IE or LU domicile.
-- Avoid bond ETFs with **>10% interest-bearing assets** unless deliberately accepting Reynders tax.
-- Prefer passive broad-index funds (cleaner "non-speculative" stance for stock CGT exemption).
-- TOB transaction tax applies on each ETF buy/sell — favor fewer, larger trades.
+Output lands in `apps/desktop/release/`.
 
-Full optimization is a high-priority TODO for iteration 3.
+### 3. Web stack — local docker-compose
+
+The web/api stack adds a Postgres-backed multi-user surface with SuperTokens auth, server-side PDF rendering (Puppeteer), and SSE log streaming for long-running Python jobs.
+
+```bash
+# One-time: API env file (just needs an encryption key for stored API keys)
+cp apps/api/.env.example apps/api/.env
+$EDITOR apps/api/.env
+# Set API_KEY_ENCRYPTION_KEY to the output of:
+openssl rand -hex 32
+
+# Backing services: Postgres + SuperTokens core (both via docker compose)
+npm run db:up           # docker compose up -d postgres supertokens
+npm run db:migrate      # one-shot Liquibase container — no host Java needed
+
+# Dev servers
+npm run serve:all       # api on :3000, web on :4200
+# or one at a time:
+npm run serve:api
+npm run serve:web
+```
+
+- Web app: <http://localhost:4200>
+- API: <http://localhost:3000/api/v1>
+- OpenAPI docs: <http://localhost:3000/api/docs>
+
+Tear the backing services down with `npm run db:down`. The Postgres data lives in a named docker volume (`pgdata`) and survives restarts; remove it explicitly with `docker volume rm investment-plan_pgdata` if you want a clean slate.
+
+For deploying to a VM (Caddy + Let's Encrypt + the same compose stack in `deploy/`), see [DEPLOYMENT.md](./DEPLOYMENT.md). For the original Electron-only → web/api split, see [MIGRATION.md](./MIGRATION.md).
+
+## License
+
+[MIT](./LICENSE).

@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  #root { @apply h-screen; }
+  html, body { @apply overflow-x-hidden; }
+  body {
+    @apply bg-canvas text-slate-900 antialiased dark:bg-ink dark:text-slate-100;
+    font-feature-settings: "ss01", "cv11";
+  }
+  table { font-feature-settings: "tnum"; }
+  /* text-base (16px) on mobile prevents iOS Safari from auto-zooming on focus.
+     Shrink back to text-sm at sm+ for the denser desktop UI. */
+  input, select, textarea {
+    @apply rounded border border-slate-300 bg-white px-2 py-1.5 text-base sm:text-sm
+           focus:border-navy-700 focus:outline-none focus:ring-1 focus:ring-navy-700
+           dark:border-navy-700 dark:bg-navy-900 dark:text-slate-100
+           dark:focus:border-gold-500 dark:focus:ring-gold-500;
+  }
+  input[type="number"] { font-variant-numeric: tabular-nums; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded dark:bg-navy-700; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400 dark:bg-navy-600; }
+
+  /* Custom-titlebar drag regions (works alongside titleBarStyle: hiddenInset).
+     Anything wrapped in .titlebar is grabbable. Interactive elements are
+     auto-excluded so buttons/inputs in the strip remain clickable. */
+  .titlebar { -webkit-app-region: drag; user-select: none; }
+  button, a, input, select, textarea, [role="button"] {
+    -webkit-app-region: no-drag;
+  }
+}
+
+@layer components {
+  /* In-app rendered markdown — fintech-styled (lighter cousin of the PDF template). */
+  .report-prose { @apply text-slate-800 leading-relaxed dark:text-slate-200; }
+  .report-prose h1 {
+    @apply font-serif text-3xl text-navy-900 font-semibold mt-2 mb-4 pb-2 dark:text-cream;
+    border-bottom: 0.5pt solid theme('colors.gold.500');
+  }
+  .report-prose h2 { @apply font-serif text-xl text-navy-900 font-semibold mt-6 mb-2 dark:text-cream; }
+  .report-prose h3 { @apply font-serif text-base text-navy-700 font-semibold mt-5 mb-1.5 dark:text-gold-300; }
+  .report-prose h4 { @apply font-serif text-sm text-navy-700 font-semibold mt-4 mb-1 dark:text-gold-300; }
+  .report-prose p { @apply my-2.5; }
+  .report-prose ul { @apply list-disc pl-5 my-2 space-y-1; }
+  .report-prose ol { @apply list-decimal pl-5 my-2 space-y-1; }
+  .report-prose li > p { @apply my-0; }
+  .report-prose strong { @apply text-navy-900 font-semibold dark:text-cream; }
+  .report-prose em { @apply italic; }
+  .report-prose a {
+    @apply text-navy-700 underline decoration-slate-300 underline-offset-2 hover:decoration-navy-700
+           dark:text-gold-300 dark:decoration-navy-700 dark:hover:decoration-gold-300;
+  }
+  .report-prose code {
+    @apply font-mono text-[0.82em] bg-slate-100 text-navy-700 px-1.5 py-0.5 rounded
+           dark:bg-navy-800 dark:text-gold-300;
+  }
+  .report-prose pre {
+    @apply font-mono text-xs bg-slate-50 px-4 py-3 my-3 rounded overflow-x-auto
+           dark:bg-navy-900;
+    border-left: 2pt solid theme('colors.gold.500');
+  }
+  .report-prose pre code { @apply bg-transparent p-0 text-slate-700 dark:text-slate-200; }
+  .report-prose blockquote {
+    @apply pl-3 my-3 italic text-slate-600 bg-slate-50/60 py-1.5 rounded-r
+           dark:text-slate-300 dark:bg-navy-900/60;
+    border-left: 2pt solid theme('colors.gold.500');
+  }
+  .report-prose hr { @apply my-6 border-slate-200 dark:border-navy-800; }
+  .report-prose .report-table-wrap {
+    @apply my-4 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0;
+  }
+  .report-prose .report-table-wrap > table { @apply my-0; }
+  .report-prose table {
+    @apply w-full text-sm my-4 border-collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  .report-prose th {
+    @apply bg-navy-900 text-white font-serif font-semibold text-left px-3 py-1.5 text-xs uppercase tracking-wide;
+  }
+  .report-prose td { @apply border-b border-slate-100 px-3 py-1.5 dark:border-navy-800; }
+  .report-prose tr:nth-child(even) td { @apply bg-slate-50/60 dark:bg-navy-900/40; }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-lg border border-slate-200 shadow-card
+           dark:bg-navy-900 dark:border-navy-700 dark:shadow-none;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-md
+           bg-navy-800 px-3.5 py-2 text-sm font-medium text-white
+           hover:bg-navy-700 focus:outline-none focus:ring-2 focus:ring-gold-500
+           disabled:opacity-50 disabled:cursor-not-allowed transition-colors
+           dark:bg-gold-500 dark:text-ink dark:hover:bg-gold-400;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-md
+           border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-navy-800
+           hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-gold-500
+           disabled:opacity-50 disabled:cursor-not-allowed transition-colors
+           dark:bg-navy-800 dark:border-navy-700 dark:text-cream dark:hover:bg-navy-700;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-md
+           px-2.5 py-1.5 text-xs font-medium text-navy-700
+           hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-gold-500
+           transition-colors
+           dark:text-slate-300 dark:hover:bg-navy-800 dark:hover:text-cream;
+  }
+  .label {
+    @apply block text-xs font-medium uppercase tracking-wide text-slate-600 mb-1
+           dark:text-slate-400;
+  }
+  .stat-value {
+    @apply font-serif text-2xl text-navy-900 font-semibold tabular-nums dark:text-cream;
+  }
+  .stat-label {
+    @apply text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400;
+  }
+}
+
+@layer utilities {
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .animate-fadeIn { animation: fadeIn 250ms ease-out; }
+
+  @keyframes marquee {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-50%, 0, 0); }
+  }
+  .animate-marquee { animation: marquee 60s linear infinite; }
+
+  @keyframes riseIn {
+    from { opacity: 0; transform: translate3d(0, 14px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  .animate-rise { animation: riseIn 800ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+  @keyframes inkSlash {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+  .animate-slash {
+    transform-origin: left center;
+    animation: inkSlash 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .bg-night {
+    background-color: #0a1f3d;
+    background-image:
+      radial-gradient(at 18% 6%, rgba(199, 164, 74, 0.16) 0%, transparent 42%),
+      radial-gradient(at 88% 4%, rgba(199, 164, 74, 0.06) 0%, transparent 38%),
+      radial-gradient(at 72% 88%, rgba(199, 164, 74, 0.08) 0%, transparent 40%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.9  0 0 0 0 0.75  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    background-size: auto, auto, auto, 180px 180px;
+  }
+
+  /* Faint dot/star field, used as an overlay on the night bg */
+  .bg-starfield {
+    background-image:
+      radial-gradient(rgba(236, 230, 211, 0.06) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  .hairline-gold     { box-shadow: inset 0 -1px 0 0 rgba(199, 164, 74, 0.28); }
+  .hairline-gold-top { box-shadow: inset 0  1px 0 0 rgba(199, 164, 74, 0.28); }
+  .hairline-cream    { box-shadow: inset 0 -1px 0 0 rgba(236, 230, 211, 0.16); }
+  .hairline-cream-top{ box-shadow: inset 0  1px 0 0 rgba(236, 230, 211, 0.16); }
+
+  .num { font-variant-numeric: tabular-nums; }
+}

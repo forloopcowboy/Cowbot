@@ -1,0 +1,25 @@
+{
+  "name": "web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/web/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": { "command": "npm run build", "cwd": "apps/web" }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": { "command": "npm run dev", "cwd": "apps/web" }
+    },
+    "preview": {
+      "executor": "nx:run-commands",
+      "options": { "command": "npm run preview", "cwd": "apps/web" }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": { "command": "npm run lint", "cwd": "apps/web" }
+    }
+  },
+  "tags": ["scope:web", "type:app"]
+}

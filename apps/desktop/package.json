@@ -1,0 +1,114 @@
+{
+  "name": "investment-plan-desktop",
+  "version": "0.1.0",
+  "description": "Investment plan desktop app",
+  "private": true,
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "prep:python": "bash scripts/prepare-python.sh",
+    "dist": "npm run build && npm run prep:python && electron-builder",
+    "dist:mac": "npm run build && npm run prep:python && electron-builder --mac",
+    "dist:mac:seeded": "npm run build && INVPLAN_SHIP_SEED=1 npm run prep:python && electron-builder --mac"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.10",
+    "@investment-plan/i18n": "*",
+    "@investment-plan/shared": "*",
+    "@investment-plan/ui": "*",
+    "i18next": "^26.0.10",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.18.1",
+    "marked": "^14.1.0",
+    "papaparse": "^5.4.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^17.0.7",
+    "react-router-dom": "^6.27.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/lodash": "^4.17.24",
+    "@types/papaparse": "^5.3.15",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "electron": "^41.7.0",
+    "electron-builder": "^26.8.1",
+    "esbuild": "^0.25.0",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3",
+    "vite": "^6.4.2",
+    "vite-plugin-electron": "^0.29.1",
+    "vite-plugin-electron-renderer": "^0.14.7"
+  },
+  "build": {
+    "appId": "com.cowboyinvestor.desktop",
+    "productName": "Cowboy Investor",
+    "electronVersion": "41.7.0",
+    "asar": true,
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/python",
+        "to": "python"
+      },
+      {
+        "from": "resources/scripts",
+        "to": "scripts"
+      },
+      {
+        "from": "resources/prompts",
+        "to": "prompts"
+      },
+      {
+        "from": "resources/seed",
+        "to": "seed"
+      },
+      {
+        "from": "electron/report-template.css",
+        "to": "electron/report-template.css"
+      },
+      {
+        "from": "build/icon.png",
+        "to": "icon.png"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.finance",
+      "icon": "build/icon.icns",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "icon": "build/icon.png",
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "target": [
+        "AppImage"
+      ]
+    }
+  }
+}

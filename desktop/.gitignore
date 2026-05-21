@@ -1,8 +1,0 @@
-node_modules/
-dist/
-dist-electron/
-release/
-resources/python/
-resources/scripts/
-*.log
-.DS_Store

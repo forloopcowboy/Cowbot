@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.7.xsd">
+
+  <changeSet id="001-enable-pgcrypto" author="claude">
+    <sql>CREATE EXTENSION IF NOT EXISTS pgcrypto;</sql>
+  </changeSet>
+
+  <changeSet id="001-profiles" author="claude">
+    <createTable tableName="profiles">
+      <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="user_id" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="profile_yaml" type="text" defaultValue="">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_at" type="timestamptz" defaultValueComputed="now()">
+        <constraints nullable="false"/>
+      </column>
+      <column name="updated_at" type="timestamptz" defaultValueComputed="now()">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addUniqueConstraint
+      tableName="profiles"
+      columnNames="user_id, name"
+      constraintName="uq_profiles_user_name"/>
+    <createIndex tableName="profiles" indexName="ix_profiles_user_id">
+      <column name="user_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="001-holdings" author="claude">
+    <createTable tableName="holdings">
+      <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="profile_id" type="uuid">
+        <constraints nullable="false"
+                     foreignKeyName="fk_holdings_profile"
+                     references="profiles(id)"
+                     deleteCascade="true"/>
+      </column>
+      <column name="position" type="int" defaultValueNumeric="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="account" type="text"/>
+      <column name="instrument" type="text"/>
+      <column name="ticker" type="text"/>
+      <column name="isin" type="text"/>
+      <column name="quantity" type="numeric(20,8)"/>
+      <column name="avg_cost" type="numeric(20,8)"/>
+      <column name="currency" type="text"/>
+      <column name="asset_class" type="text"/>
+      <column name="notes" type="text"/>
+      <column name="extra" type="jsonb"/>
+    </createTable>
+    <createIndex tableName="holdings" indexName="ix_holdings_profile">
+      <column name="profile_id"/>
+      <column name="position"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="001-reports" author="claude">
+    <createTable tableName="reports">
+      <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="profile_id" type="uuid">
+        <constraints nullable="false"
+                     foreignKeyName="fk_reports_profile"
+                     references="profiles(id)"
+                     deleteCascade="true"/>
+      </column>
+      <column name="stem" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="kind" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="md_content" type="text"/>
+      <column name="pdf_bytes" type="bytea"/>
+      <column name="size_bytes" type="bigint" defaultValueNumeric="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_at" type="timestamptz" defaultValueComputed="now()">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addUniqueConstraint
+      tableName="reports"
+      columnNames="profile_id, stem"
+      constraintName="uq_reports_profile_stem"/>
+  </changeSet>
+
+  <changeSet id="001-user-settings" author="claude">
+    <createTable tableName="user_settings">
+      <column name="user_id" type="text">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="anthropic_api_key_ciphertext" type="bytea"/>
+      <column name="anthropic_api_key_iv" type="bytea"/>
+      <column name="anthropic_api_key_tag" type="bytea"/>
+      <column name="model" type="text"/>
+      <column name="updated_at" type="timestamptz" defaultValueComputed="now()">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="001-script-jobs" author="claude">
+    <createTable tableName="script_jobs">
+      <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="profile_id" type="uuid">
+        <constraints nullable="false"
+                     foreignKeyName="fk_jobs_profile"
+                     references="profiles(id)"
+                     deleteCascade="true"/>
+      </column>
+      <column name="kind" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="status" type="text" defaultValue="pending">
+        <constraints nullable="false"/>
+      </column>
+      <column name="exit_code" type="int"/>
+      <column name="log" type="text" defaultValue="">
+        <constraints nullable="false"/>
+      </column>
+      <column name="started_at" type="timestamptz" defaultValueComputed="now()">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ended_at" type="timestamptz"/>
+    </createTable>
+    <createIndex tableName="script_jobs" indexName="ix_jobs_profile_started">
+      <column name="profile_id"/>
+      <column name="started_at"/>
+    </createIndex>
+  </changeSet>
+
+</databaseChangeLog>

@@ -1,8 +1,36 @@
 .env
+.env.*
+!.env.example
+deploy/.env
 .venv/
 __pycache__/
 *.pyc
 /tmp/
 profiles/**/*
+apps/profiles/**/*
 .idea
 .DS_Store
+**/.DS_Store
+
+# Claude Code local artifacts
+.claude/settings.local.json
+.claude/worktrees
+
+# Node / Nx
+node_modules
+dist
+.nx/cache
+.nx/workspace-data
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Coverage
+coverage
+
+# Release artifacts published to the remote
+deploy/downloads/*
+!deploy/downloads/.gitkeep
+apps/desktop/release/
+
+.nx/polygraph
+.nx/self-healing
