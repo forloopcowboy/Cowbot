@@ -69,7 +69,7 @@ export default function Layout() {
             - <md: fixed drawer that slides in from the left */}
         <div
           className={[
-            'fixed inset-y-0 left-0 z-40 transform transition-transform duration-200 ease-out',
+            'fixed inset-y-0 left-0 z-40 transform transition-transform duration-200 ease-out min-h-screen',
             'md:static md:translate-x-0 md:transition-none',
             drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
           ].join(' ')}
